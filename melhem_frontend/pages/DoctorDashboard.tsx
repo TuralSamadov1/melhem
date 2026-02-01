@@ -2,14 +2,20 @@
 import React from 'react';
 import { ClinicalCase, User, CaseStatus } from '../types';
 import { ChevronRight, Plus, Users, Share2, Award, Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 
-interface DoctorDashboardProps {
-  cases: ClinicalCase[];
-  user: User;
-}
 
-const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ cases, user }) => {
+const DoctorDashboard: React.FC = () => {
+    if (!localStorage.getItem("access")) {
+    return <Navigate to="/login" />;
+  }
+
+    // TEMP DATA (sonra API ilə dəyişəcəyik)
+  const cases: ClinicalCase[] = [];
+  const user: User = {
+    name: "Doktor"
+  } as any;
+
   const publishedCases = cases.filter(c => c.status === CaseStatus.PUBLISHED).length;
   const inProgress = cases.filter(c => c.status === CaseStatus.REVIEWED || c.status === CaseStatus.IN_PROGRESS).length;
   const badgeCount = 2;
