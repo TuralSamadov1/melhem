@@ -3,7 +3,6 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-
     "jsx": "react-jsx",
 
     "strict": false,
@@ -13,7 +12,12 @@
     "moduleDetection": "force",
 
     "types": ["node", "react", "react-dom"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": ["**/*.ts", "**/*.tsx"]
 }

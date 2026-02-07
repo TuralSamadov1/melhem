@@ -2,31 +2,32 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import LandingPage from "./pages/LandingPage";
+import LoginPage from "./pages/LoginPage";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import MarketingDashboard from "./pages/MarketingDashboard";
 
 const App: React.FC = () => {
-  const isAuthenticated = !!localStorage.getItem("access");
+  const isAuthenticated = !!localStorage.getItem("access_token");
 
   return (
     <BrowserRouter>
       <Routes>
-        {/* Login / Landing */}
+        {/* Landing */}
         <Route path="/" element={<LandingPage />} />
 
-        {/* Doctor Dashboard */}
-        <Route
-          path="/doctor"
-          element={
-            isAuthenticated ? <DoctorDashboard /> : <Navigate to="/" replace />
-          }
-        />
+        {/* Login pages */}
+        <Route path="/login/doctor" element={<LoginPage role="doctor" />} />
+        <Route path="/login/marketing" element={<LoginPage role="marketing" />} />
 
-        {/* Marketing Dashboard */}
+        {/* Dashboard (ortaq giriş nöqtəsi) */}
         <Route
-          path="/marketing"
+          path="/dashboard"
           element={
-            isAuthenticated ? <MarketingDashboard /> : <Navigate to="/" replace />
+            isAuthenticated ? (
+              <DashboardRouter />
+            ) : (
+              <Navigate to="/" replace />
+            )
           }
         />
 
@@ -35,6 +36,18 @@ const App: React.FC = () => {
       </Routes>
     </BrowserRouter>
   );
+};
+
+/* 🔽 ROLE-A GÖRƏ DASHBOARD SEÇƏN KOMPONENT */
+const DashboardRouter = () => {
+  const userRaw = localStorage.getItem("user");
+  const user = userRaw ? JSON.parse(userRaw) : null;
+
+  if (user?.role === "MARKETING") {
+    return <MarketingDashboard />;
+  }
+
+  return <DoctorDashboard />;
 };
 
 export default App;

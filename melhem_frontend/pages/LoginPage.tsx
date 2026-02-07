@@ -1,33 +1,38 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
+import { login, getMe } from "@/services/auth";
 
-export default function LoginPage({ role }: { role: "doctor" | "marketing" }) {
+export default function LoginPage({
+  role,
+}: {
+  role: "doctor" | "marketing";
+}) {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleLogin = async () => {
+    setError("");
+
     try {
-      const res = await api.post("/api/login/", { username, password });
+      // 1. login (JWT alır)
+      await login(email, password);
 
-      localStorage.setItem("access", res.data.access);
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ role })
-      );
+      // 2. real user məlumatını backend-dən alır
+      await getMe();
 
+      // 3. həmişə dashboard-a yönləndir
       navigate("/dashboard");
     } catch {
-      setError("Email və ya şifrə yanlışdır");
+      setError("E-poçt və ya şifrə yanlışdır");
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-brand-mist">
       <div className="bg-white p-8 rounded-3xl w-[360px] space-y-4">
-        {/* geri */}
+        {/* geri qayıt */}
         <button
           onClick={() => navigate(-1)}
           className="text-sm text-brand-primary flex items-center gap-2"
@@ -43,9 +48,9 @@ export default function LoginPage({ role }: { role: "doctor" | "marketing" }) {
 
         <input
           className="w-full border rounded-xl px-4 py-2"
-          placeholder="Username"
-          value={username}
-          onChange={e => setUsername(e.target.value)}
+          placeholder="E-poçt"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
@@ -53,7 +58,7 @@ export default function LoginPage({ role }: { role: "doctor" | "marketing" }) {
           className="w-full border rounded-xl px-4 py-2"
           placeholder="Şifrə"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
         <button
