@@ -1,43 +1,39 @@
 import React from "react";
-import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import LandingPage from "./pages/LandingPage";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import MarketingDashboard from "./pages/MarketingDashboard";
 
 const App: React.FC = () => {
-  const token = localStorage.getItem("access");
-  const role = localStorage.getItem("role");
+  const isAuthenticated = !!localStorage.getItem("access");
 
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<LandingPage />} />
-        <Route path="/login/doctor" element={<LandingPage />} />
-        <Route path="/login/marketing" element={<LandingPage />} />
+        {/* Login / Landing */}
+        <Route path="/" element={<LandingPage />} />
 
+        {/* Doctor Dashboard */}
         <Route
           path="/doctor"
           element={
-            token && role === "doctor"
-              ? <DoctorDashboard />
-              : <Navigate to="/login/doctor" replace />
+            isAuthenticated ? <DoctorDashboard /> : <Navigate to="/" replace />
           }
         />
 
+        {/* Marketing Dashboard */}
         <Route
           path="/marketing"
           element={
-            token && role === "marketing"
-              ? <MarketingDashboard />
-              : <Navigate to="/login/marketing" replace />
+            isAuthenticated ? <MarketingDashboard /> : <Navigate to="/" replace />
           }
         />
 
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </HashRouter>
+    </BrowserRouter>
   );
 };
 

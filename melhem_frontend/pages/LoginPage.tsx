@@ -2,65 +2,67 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
-export default function LoginPage({ role }: { role?: "doctor" | "marketing" }) {
+export default function LoginPage({ role }: { role: "doctor" | "marketing" }) {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleLogin = async () => {
     try {
-      const res = await api.post("/api/login/", {
-        email,
-        password,
-      });
+      const res = await api.post("/api/login/", { username, password });
 
       localStorage.setItem("access", res.data.access);
-      localStorage.setItem("role", role || "marketing");
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ role })
+      );
 
-      if (role === "doctor") {
-        navigate("/doctor");
-      } else {
-        navigate("/marketing");
-      }
-    } catch (e) {
+      navigate("/dashboard");
+    } catch {
       setError("Email və ya şifrə yanlışdır");
     }
   };
 
   return (
-    <div style={{ padding: 40 }}>
-      <h2>
-        {role === "doctor"
-          ? "Həkim girişi"
-          : role === "marketing"
-          ? "Marketinq girişi"
-          : "Giriş"}
-      </h2>
+    <div className="min-h-screen flex items-center justify-center bg-brand-mist">
+      <div className="bg-white p-8 rounded-3xl w-[360px] space-y-4">
+        {/* geri */}
+        <button
+          onClick={() => navigate(-1)}
+          className="text-sm text-brand-primary flex items-center gap-2"
+        >
+          ← geri qayıt
+        </button>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        <h2 className="text-2xl font-bold italic text-center">
+          {role === "doctor" ? "Həkim girişi" : "Marketinq girişi"}
+        </h2>
 
-      <input
-        placeholder="Email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-      />
-      <br /><br />
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
-      <input
-        type="password"
-        placeholder="Şifrə"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-      />
-      <br /><br />
+        <input
+          className="w-full border rounded-xl px-4 py-2"
+          placeholder="Username"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+        />
 
-      <button onClick={handleLogin}>Daxil ol</button>
+        <input
+          type="password"
+          className="w-full border rounded-xl px-4 py-2"
+          placeholder="Şifrə"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+        />
 
-      <hr />
-
-      <p><a href="#/login/doctor">Həkim kimi daxil ol</a></p>
-      <p><a href="#/login/marketing">Marketinq kimi daxil ol</a></p>
+        <button
+          onClick={handleLogin}
+          className="w-full bg-brand-primary text-white py-3 rounded-xl font-bold"
+        >
+          Daxil ol
+        </button>
+      </div>
     </div>
   );
 }
